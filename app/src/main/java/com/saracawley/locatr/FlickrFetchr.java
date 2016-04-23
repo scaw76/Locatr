@@ -22,6 +22,8 @@ import java.util.List;
 public class FlickrFetchr {
     private static String TAG = "FlickrFetchr";
     private static String API_KEY ="143d81a86a615c508b11a2dbfc08aaad";
+
+
     public  byte[] getUrlBytes(String urlSpec) throws IOException{
         URL url = new URL(urlSpec);
         HttpURLConnection connection = (HttpURLConnection)url.openConnection();
@@ -57,7 +59,7 @@ public class FlickrFetchr {
                     .appendQueryParameter("nojsoncallback", "1")
                     .appendQueryParameter("lat", "" + location.getLatitude())
                     .appendQueryParameter("lon", "" + location.getLongitude())
-                    .appendQueryParameter("extras", "url_s")
+                    .appendQueryParameter("extras", "url_s, geo")
                     .build().toString();
             String jsonString = getUrlString(url);
             //Log.i(TAG, "Recieved JSON: " + jsonString);
@@ -74,6 +76,7 @@ public class FlickrFetchr {
     public List<GalleryItem> searchPhotos(Location location){
         return fetchItems(location);
     }
+
     private  void parseItems(List<GalleryItem> items, JSONObject jsonBody)throws IOException, JSONException {
         JSONObject photosJsonObject = jsonBody.getJSONObject("photos");
         JSONArray photoJsonArray = photosJsonObject.getJSONArray("photo");
@@ -89,6 +92,8 @@ public class FlickrFetchr {
                 continue;
             }
             item.setUrl(photoJsonObject.getString("url_s"));
+            item.setLat(photoJsonObject.getDouble("latitude"));
+            item.setLon(photoJsonObject.getDouble("longitude"));
             items.add(item);
         }
     }
